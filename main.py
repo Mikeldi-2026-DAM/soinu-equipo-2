@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-app = FastAPI(title="Muro")
+app = FastAPI(title="Eder")
 
 # 1. GET /salud → {"ok": True, "app": "Muro"}
 
