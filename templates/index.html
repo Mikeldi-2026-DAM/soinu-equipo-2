@@ -4,6 +4,11 @@
 
 {% block contenido %}
   <h1>Muro de 2.º DAM</h1>
+  <form method="post" action="/">
+  <input name="autor" placeholder="Tu nombre" required>
+  <textarea name="texto" placeholder="Tu mensaje" required></textarea>
+  <button>Publicar</button>
+</form>
   {% if mensajes %}
     <p>{{ mensajes|length }} mensajes</p>
     <ul>

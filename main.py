@@ -2,6 +2,8 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
+from fastapi import FastAPI, Form, HTTPException, Request
+from fastapi.responses import HTMLResponse, RedirectResponse
 
 app = FastAPI(title="Muro")
 templates = Jinja2Templates(directory="templates")
@@ -73,3 +75,8 @@ def detalle(request: Request, mensaje_id: int):
         if m["id"] == mensaje_id:
             return templates.TemplateResponse(request, "mensaje.html", {"mensaje": m})
     raise HTTPException(status_code=404, detail="No existe ese mensaje")
+
+@app.post("/")
+def publicar(autor: str = Form(""), texto: str = Form("")):
+    MENSAJES.append({"id": siguiente_id(), "autor": autor, "texto": texto})
+    return RedirectResponse("/", status_code=303)
