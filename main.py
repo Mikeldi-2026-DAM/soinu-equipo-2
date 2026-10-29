@@ -1,5 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
+
+app = FastAPI(title="Muro")
+templates = Jinja2Templates(directory="templates")
 
 app = FastAPI(title="Muro de Eder Olivencia")
 
@@ -45,8 +50,6 @@ def crear_mensaje(mensaje: MensajeNuevo):
     MENSAJES.append(nuevo_mensaje)
     return nuevo_mensaje
 
-from fastapi import FastAPI, HTTPException   # ← cambia la línea de arriba del archivo
-
 @app.get("/api/mensajes/{mensaje_id}")
 def ver_mensaje(mensaje_id: int):
     for m in MENSAJES:
@@ -59,3 +62,7 @@ def crear_mensaje(nuevo: MensajeNuevo):
     mensaje = {"id": siguiente_id(), **nuevo.model_dump()}
     MENSAJES.append(mensaje)
     return mensaje
+
+@app.get("/", response_class=HTMLResponse)
+def inicio(request: Request):
+    return templates.TemplateResponse(request, "index.html", {"mensajes": MENSAJES})

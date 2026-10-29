@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Muro</title>
+</head>
+<body>
+  <h1>Muro de 2.º DAM</h1>
+  <ul>
+    {% for m in mensajes %}
+      <li><b>{{ m.autor }}</b>: {{ m.texto }}</li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
