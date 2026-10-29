@@ -66,3 +66,10 @@ def crear_mensaje(nuevo: MensajeNuevo):
 @app.get("/", response_class=HTMLResponse)
 def inicio(request: Request):
     return templates.TemplateResponse(request, "index.html", {"mensajes": MENSAJES})
+
+@app.get("/mensajes/{mensaje_id}", response_class=HTMLResponse)
+def detalle(request: Request, mensaje_id: int):
+    for m in MENSAJES:
+        if m["id"] == mensaje_id:
+            return templates.TemplateResponse(request, "mensaje.html", {"mensaje": m})
+    raise HTTPException(status_code=404, detail="No existe ese mensaje")

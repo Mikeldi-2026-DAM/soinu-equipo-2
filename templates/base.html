@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>{% block titulo %}Muro{% endblock %} · 2.º DAM</title>
+  <style>
+    /* Un diseño mínimo: los colores en variables (un primer paso hacia los tokens de diseño) */
+    :root { --fondo: #f6f7f9; --tarjeta: #fff; --tinta: #1d2330; --suave: #667085; --acento: #2563eb; --borde: #e4e7ec; --error: #b42318; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--fondo); color: var(--tinta); font: 16px/1.5 system-ui, sans-serif; }
+    header { background: var(--tarjeta); border-bottom: 1px solid var(--borde); padding: .9rem 1.25rem; }
+    header a { color: var(--tinta); font-weight: 700; text-decoration: none; }
+    main { max-width: 40rem; margin: 1.5rem auto; padding: 0 1.25rem; }
+    h1 { font-size: 1.6rem; margin: 0 0 1rem; }
+    a { color: var(--acento); }
+    ul { list-style: none; padding: 0; margin: 1rem 0; }
+    li { position: relative; background: var(--tarjeta); border: 1px solid var(--borde); border-radius: .6rem; padding: .7rem 1rem; margin: .5rem 0; }
+    li:has(form) { padding-right: 6rem; }
+    li form { position: absolute; right: .8rem; top: 50%; transform: translateY(-50%); }
+    input, textarea { display: block; width: 100%; margin: .35rem 0; padding: .55rem .7rem; font: inherit; border: 1px solid var(--borde); border-radius: .5rem; }
+    button { font: inherit; cursor: pointer; border: 0; border-radius: .5rem; padding: .5rem 1rem; background: var(--acento); color: #fff; }
+    li button { padding: .25rem .7rem; background: transparent; color: var(--suave); border: 1px solid var(--borde); }
+    .error { color: var(--error); background: #fef3f2; border: 1px solid #fecdca; border-radius: .5rem; padding: .6rem .8rem; }
+  </style>
+</head>
+<body>
+  <header><a href="/">Muro de 2.º DAM</a></header>
+  <main>
+    {% block contenido %}{% endblock %}
+  </main>
+</body>
+</html>

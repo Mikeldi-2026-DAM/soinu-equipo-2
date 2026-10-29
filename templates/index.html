@@ -1,15 +1,17 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <title>Muro</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block titulo %}Inicio{% endblock %}
+
+{% block contenido %}
   <h1>Muro de 2.º DAM</h1>
-  <ul>
-    {% for m in mensajes %}
-      <li><b>{{ m.autor }}</b>: {{ m.texto }}</li>
-    {% endfor %}
-  </ul>
-</body>
-</html>
+  {% if mensajes %}
+    <p>{{ mensajes|length }} mensajes</p>
+    <ul>
+      {% for m in mensajes|reverse %}
+        <li><a href="/mensajes/{{ m.id }}"><b>{{ m.autor }}</b></a>: {{ m.texto }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Todavía no hay mensajes.</p>
+  {% endif %}
+{% endblock %}
