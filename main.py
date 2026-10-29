@@ -1,11 +1,11 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 app = FastAPI(title="Muro de Eder Olivencia")
 
 class MensajeNuevo(BaseModel):
-    autor: str
-    texto: str
+    autor: str = Field(min_length=1, max_length=30)
+    texto: str = Field(min_length=1, max_length=280)
 
 MENSAJES = [
     {"id": 1, "autor": "Ane", "texto": "Bienvenidos al muro de 2.º DAM"},
@@ -53,3 +53,9 @@ def ver_mensaje(mensaje_id: int):
         if m["id"] == mensaje_id:
             return m
     raise HTTPException(status_code=404, detail="No existe ese mensaje")
+
+@app.post("/api/mensajes", status_code=201)
+def crear_mensaje(nuevo: MensajeNuevo):
+    mensaje = {"id": siguiente_id(), **nuevo.model_dump()}
+    MENSAJES.append(mensaje)
+    return mensaje
