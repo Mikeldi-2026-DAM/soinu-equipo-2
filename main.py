@@ -77,6 +77,14 @@ def detalle(request: Request, mensaje_id: int):
     raise HTTPException(status_code=404, detail="No existe ese mensaje")
 
 @app.post("/")
-def publicar(autor: str = Form(""), texto: str = Form("")):
+def publicar(request: Request, autor: str = Form(""), texto: str = Form("")):
+    autor, texto = autor.strip(), texto.strip()
+    if not autor or not texto or len(autor) > 30 or len(texto) > 280:
+        error = "Escribe tu nombre y un mensaje (máximo 280 caracteres)."
+        return templates.TemplateResponse(
+            request, "index.html",
+            {"mensajes": MENSAJES, "error": error, "autor": autor, "texto": texto},
+            status_code=400,
+        )
     MENSAJES.append({"id": siguiente_id(), "autor": autor, "texto": texto})
     return RedirectResponse("/", status_code=303)
