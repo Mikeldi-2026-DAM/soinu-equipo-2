@@ -1,3 +1,4 @@
+# soinu-equipo-2
 # Muro de mensajes
 
 Semana 1 de Python (2.º DAM). Una web con FastAPI y Jinja2 donde se escribe un nombre y un mensaje y todos los mensajes
