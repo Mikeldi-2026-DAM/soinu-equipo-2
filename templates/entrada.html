@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block titulo %}{{ entrada.nombre }}{% endblock %}
+
+{% block contenido %}
+  <h1 class="titulo-pagina">{{ entrada.nombre }}</h1>
+  <div class="dos-columnas">
+    <div class="caja">
+      <p>{{ entrada.descripcion }}</p>
+      <dl>
+        <dt>Días</dt><dd>{{ entrada.dias }}</dd>
+        <dt>Zona</dt><dd>{{ entrada.zona }}</dd>
+        <dt>Máximo por compra</dt><dd>{{ entrada.max_por_compra }} entradas</dd>
+      </dl>
+    </div>
+    <div class="caja">
+      <div class="precio">{{ entrada.precio }} <small>€ / entrada</small></div>
+      {% if entrada.plazas_libres == 0 %}
+        <p><span class="etiqueta-agotada">Agotada</span></p>
+      {% else %}
+        <div class="plazas">
+          Quedan {{ entrada.plazas_libres }} de {{ entrada.plazas_totales }}
+          <div class="medidor"><span style="width: {{ (entrada.plazas_libres / entrada.plazas_totales * 100)|round }}%"></span></div>
+        </div>
+        <p><a class="boton" style="width: 100%" href="/comprar?tipo={{ entrada.id }}">Comprar</a></p>
+      {% endif %}
+    </div>
+  </div>
+  <a class="volver" href="/">← Volver a las entradas</a>
+{% endblock %}

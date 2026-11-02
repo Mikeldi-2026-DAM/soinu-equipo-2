@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block titulo %}Comprar{% endblock %}
+
+{% block contenido %}
+  <h1 class="titulo-pagina">Comprar entradas</h1>
+
+  <div class="dos-columnas">
+    <form class="caja" method="post" action="/comprar">
+      {% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+      <label for="tipo_id">Tipo de entrada</label>
+      <select id="tipo_id" name="tipo_id" required>
+        {% for e in entradas %}
+          <option value="{{ e.id }}"
+                  {% if e.id|string == datos.tipo_id|string %}selected{% endif %}
+                  {% if e.plazas_libres == 0 %}disabled{% endif %}>
+            {{ e.nombre }} · {{ e.precio }} € ·
+            {% if e.plazas_libres == 0 %}Agotada{% else %}quedan {{ e.plazas_libres }} (máx. {{ e.max_por_compra }} por compra){% endif %}
+          </option>
+        {% endfor %}
+      </select>
+
+      <label for="cantidad">Cantidad</label>
+      <input id="cantidad" name="cantidad" type="number" min="1" max="6" value="{{ datos.cantidad or 1 }}" required>
+
+      <label for="nombre">Nombre y apellidos</label>
+      <input id="nombre" name="nombre" maxlength="60" value="{{ datos.nombre or '' }}" required>
+
+      <label for="correo">Correo electrónico</label>
+      <input id="correo" name="correo" type="email" maxlength="120" value="{{ datos.correo or '' }}" required>
+
+      <button>Comprar</button>
+    </form>
+
+    <div class="caja">
+      <h2 style="font-size: 1.1rem">Antes de comprar</h2>
+      <dl>
+        <dt>Entradas</dt><dd>Te las enviamos al correo que pongas.</dd>
+        <dt>En la puerta</dt><dd>Enseña la entrada y di el nombre de la compra.</dd>
+        <dt>Total</dt><dd>Lo verás en la confirmación.</dd>
+      </dl>
+    </div>
+  </div>
+  <a class="volver" href="/">← Volver a las entradas</a>
+{% endblock %}
