@@ -173,6 +173,33 @@ def api_compra(compra_id: int):
     return compra
 
 
+# ---------- PÁGINAS ----------
+
+def pagina_error(request, titulo, mensaje, codigo=404):
+    return templates.TemplateResponse(
+        request, "error.html", {"titulo": titulo, "mensaje": mensaje}, status_code=codigo
+    )
+
+
+def a_entero(texto):
+    """'3' -> 3; cualquier otra cosa -> None (para dar una página de error y no un volcado)."""
+    return int(texto) if texto.isdigit() else None
+
+
+@app.get("/", response_class=HTMLResponse)
+def portada(request: Request):
+    return templates.TemplateResponse(request, "index.html", {"entradas": ENTRADAS})
+
+
+@app.get("/entradas/{entrada_id}", response_class=HTMLResponse)
+def pagina_entrada(request: Request, entrada_id: str):
+    entrada = buscar_entrada(a_entero(entrada_id))
+    if entrada is None:
+        return pagina_error(request, "Esa entrada no existe",
+                            "El tipo de entrada que buscas no existe o ya no está a la venta.")
+    return templates.TemplateResponse(request, "entrada.html", {"entrada": entrada})
+
+
 # ---------- PRUEBA (en tu ordenador: python main.py) ----------
 if __name__ == "__main__":
     from aula import Cliente
@@ -186,3 +213,5 @@ if __name__ == "__main__":
     print(c.post("/api/compras", json={"tipo_id": 4, "cantidad": 2, "nombre": "Ane", "correo": "sin-arroba"})
           .status_code, "(esperado 422)")
     print(c.get(f"/api/compras/{r.json()['id']}").status_code, "(esperado 200)")
+    print(c.get("/").status_code, c.get("/entradas/1").status_code, "(esperado 200 200)")
+    print(c.get("/entradas/99").status_code, c.get("/entradas/abc").status_code, "(esperado 404 404)")

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block titulo %}No encontrado{% endblock %}
+
+{% block contenido %}
+  <h1>{{ titulo }}</h1>
+  <div class="caja">
+    <p>{{ mensaje }}</p>
+    <a class="boton" href="/">Ver todas las entradas</a>
+  </div>
+{% endblock %}

@@ -2,29 +2,48 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <title>{% block titulo %}Muro{% endblock %} · 2.º DAM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Entradas{% endblock %} · SOINU</title>
   <style>
-    /* Un diseño mínimo: los colores en variables (un primer paso hacia los tokens de diseño) */
-    :root { --fondo: #f6f7f9; --tarjeta: #fff; --tinta: #1d2330; --suave: #667085; --acento: #2563eb; --borde: #e4e7ec; --error: #b42318; }
+    /* Colores de SOINU en variables: si cambian, se cambian solo aquí */
+    :root {
+      --fondo: #f5f3ef; --tarjeta: #fff; --tinta: #16141a; --suave: #6b6773; --borde: #e3dfd8;
+      --marca: #16141a; --marca-tinta: #fff; --acento: #e8452c; --acento-hover: #c9361f;
+      --ok: #157347; --error: #b42318; --agotada: #9a96a0;
+    }
     * { box-sizing: border-box; }
     body { margin: 0; background: var(--fondo); color: var(--tinta); font: 16px/1.5 system-ui, sans-serif; }
-    header { background: var(--tarjeta); border-bottom: 1px solid var(--borde); padding: .9rem 1.25rem; }
-    header a { color: var(--tinta); font-weight: 700; text-decoration: none; }
-    main { max-width: 40rem; margin: 1.5rem auto; padding: 0 1.25rem; }
-    h1 { font-size: 1.6rem; margin: 0 0 1rem; }
+    header { background: var(--marca); color: var(--marca-tinta); padding: 1rem 1.25rem; }
+    header .dentro { max-width: 56rem; margin: 0 auto; display: flex; align-items: baseline; gap: 1rem; }
+    header a { color: var(--marca-tinta); font-weight: 800; font-size: 1.5rem; letter-spacing: .2em; text-decoration: none; }
+    header a span { color: var(--acento); }
+    header small { color: #bdb8c4; }
+    main { max-width: 56rem; margin: 1.5rem auto; padding: 0 1.25rem; }
+    h1 { font-size: 1.7rem; margin: 0 0 1rem; }
     a { color: var(--acento); }
-    ul { list-style: none; padding: 0; margin: 1rem 0; }
-    li { position: relative; background: var(--tarjeta); border: 1px solid var(--borde); border-radius: .6rem; padding: .7rem 1rem; margin: .5rem 0; }
-    li:has(form) { padding-right: 6rem; }
-    li form { position: absolute; right: .8rem; top: 50%; transform: translateY(-50%); }
-    input, textarea { display: block; width: 100%; margin: .35rem 0; padding: .55rem .7rem; font: inherit; border: 1px solid var(--borde); border-radius: .5rem; }
-    button { font: inherit; cursor: pointer; border: 0; border-radius: .5rem; padding: .5rem 1rem; background: var(--acento); color: #fff; }
-    li button { padding: .25rem .7rem; background: transparent; color: var(--suave); border: 1px solid var(--borde); }
+    .tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(12.5rem, 1fr)); gap: 1rem; padding: 0; list-style: none; }
+    .tarjeta { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: .8rem; padding: 1rem; display: flex; flex-direction: column; gap: .4rem; }
+    .tarjeta h2 { font-size: 1.15rem; margin: 0; }
+    .tarjeta p { margin: 0; color: var(--suave); flex: 1; }
+    .precio { font-size: 1.4rem; font-weight: 700; }
+    .plazas { font-size: .9rem; color: var(--suave); }
+    .agotada { opacity: .65; }
+    .etiqueta-agotada { display: inline-block; background: var(--agotada); color: #fff; border-radius: .4rem; padding: .15rem .6rem; font-weight: 700; font-size: .9rem; }
+    .boton, button { display: inline-block; font: inherit; cursor: pointer; border: 0; border-radius: .5rem; padding: .55rem 1.1rem; background: var(--acento); color: #fff; text-decoration: none; text-align: center; }
+    .boton:hover, button:hover { background: var(--acento-hover); }
+    .caja { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: .8rem; padding: 1.25rem; }
+    dl { display: grid; grid-template-columns: max-content 1fr; gap: .3rem 1rem; }
+    dt { color: var(--suave); }
+    dd { margin: 0; }
+    label { display: block; margin-top: .8rem; font-weight: 600; }
+    input, select { display: block; width: 100%; margin: .3rem 0; padding: .55rem .7rem; font: inherit; border: 1px solid var(--borde); border-radius: .5rem; background: #fff; }
+    form button { margin-top: 1rem; }
     .error { color: var(--error); background: #fef3f2; border: 1px solid #fecdca; border-radius: .5rem; padding: .6rem .8rem; }
+    .ok { color: var(--ok); font-weight: 700; }
   </style>
 </head>
 <body>
-  <header><a href="/">Muro de 2.º DAM</a></header>
+  <header><div class="dentro"><a href="/">SOINU<span>.</span></a><small>Venta de entradas</small></div></header>
   <main>
     {% block contenido %}{% endblock %}
   </main>
