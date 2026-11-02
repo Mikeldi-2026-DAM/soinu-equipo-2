@@ -106,9 +106,71 @@ def calcular_total(entrada, cantidad):
     return entrada["precio"] * cantidad
 
 
+def registrar_compra(tipo_id, cantidad, nombre, correo):
+    """Comprueba las reglas, descuenta las plazas y guarda la compra.
+
+    Devuelve (compra, None) si va bien, o (None, (código, mensaje)) si no.
+    Nombre y correo ya llegan validados.
+    """
+    entrada = buscar_entrada(tipo_id)
+    if entrada is None:
+        return None, (422, "Ese tipo de entrada no existe.")
+    if cantidad < 1 or cantidad > entrada["max_por_compra"]:
+        return None, (422, f"La cantidad tiene que estar entre 1 y {entrada['max_por_compra']}.")
+    with CANDADO:  # comprobar y descontar a la vez, para no vender plazas que ya no hay
+        if entrada["plazas_libres"] == 0:
+            return None, (409, f"La entrada «{entrada['nombre']}» está agotada.")
+        if cantidad > entrada["plazas_libres"]:
+            return None, (409, f"Solo quedan {entrada['plazas_libres']} plazas de «{entrada['nombre']}».")
+        entrada["plazas_libres"] -= cantidad
+        compra = {
+            "id": siguiente_id(),
+            "tipo_id": entrada["id"],
+            "cantidad": cantidad,
+            "total": calcular_total(entrada, cantidad),
+            "fecha": datetime.now().isoformat(timespec="seconds"),
+            "nombre": nombre,
+            "correo": correo,
+        }
+        COMPRAS.append(compra)
+    return compra, None
+
+
 @app.get("/salud")
 def salud():
     return {"ok": True, "app": "Entradas SOINU"}
+
+
+# ---------- API JSON ----------
+
+@app.get("/api/entradas")
+def api_entradas():
+    return ENTRADAS
+
+
+@app.get("/api/entradas/{entrada_id}")
+def api_entrada(entrada_id: int):
+    entrada = buscar_entrada(entrada_id)
+    if entrada is None:
+        raise HTTPException(status_code=404, detail="No existe ese tipo de entrada")
+    return entrada
+
+
+@app.post("/api/compras", status_code=201)
+def api_crear_compra(nueva: CompraNueva):
+    compra, error = registrar_compra(nueva.tipo_id, nueva.cantidad, nueva.nombre.strip(), nueva.correo.strip())
+    if error:
+        codigo, mensaje = error
+        raise HTTPException(status_code=codigo, detail=mensaje)
+    return compra
+
+
+@app.get("/api/compras/{compra_id}")
+def api_compra(compra_id: int):
+    compra = buscar_compra(compra_id)
+    if compra is None:
+        raise HTTPException(status_code=404, detail="No existe esa compra")
+    return compra
 
 
 # ---------- PRUEBA (en tu ordenador: python main.py) ----------
@@ -116,3 +178,11 @@ if __name__ == "__main__":
     from aula import Cliente
     c = Cliente(app)
     print(c.get("/salud").json())
+    print(c.get("/api/entradas").status_code, "tipos:", len(c.get("/api/entradas").json()))
+    print(c.get("/api/entradas/99").status_code, "(esperado 404)")
+    r = c.post("/api/compras", json={"tipo_id": 4, "cantidad": 2, "nombre": "Ane", "correo": "ane@ejemplo.com",
+                                     "total": 1})  # el total que llega se ignora
+    print(r.status_code, r.json())
+    print(c.post("/api/compras", json={"tipo_id": 4, "cantidad": 2, "nombre": "Ane", "correo": "sin-arroba"})
+          .status_code, "(esperado 422)")
+    print(c.get(f"/api/compras/{r.json()['id']}").status_code, "(esperado 200)")
