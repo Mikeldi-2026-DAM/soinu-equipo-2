@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block titulo %}Comprar{% endblock %}
+
+{% block contenido %}
+  <h1>Comprar entradas</h1>
+
+  {% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+  <form class="caja" method="post" action="/comprar">
+    <label for="tipo_id">Tipo de entrada</label>
+    <select id="tipo_id" name="tipo_id" required>
+      {% for e in entradas %}
+        <option value="{{ e.id }}"
+                {% if e.id|string == datos.tipo_id|string %}selected{% endif %}
+                {% if e.plazas_libres == 0 %}disabled{% endif %}>
+          {{ e.nombre }} · {{ e.precio }} € ·
+          {% if e.plazas_libres == 0 %}Agotada{% else %}quedan {{ e.plazas_libres }} (máx. {{ e.max_por_compra }} por compra){% endif %}
+        </option>
+      {% endfor %}
+    </select>
+
+    <label for="cantidad">Cantidad</label>
+    <input id="cantidad" name="cantidad" type="number" min="1" max="6" value="{{ datos.cantidad or 1 }}" required>
+
+    <label for="nombre">Nombre y apellidos</label>
+    <input id="nombre" name="nombre" maxlength="60" value="{{ datos.nombre or '' }}" required>
+
+    <label for="correo">Correo electrónico</label>
+    <input id="correo" name="correo" type="email" maxlength="120" value="{{ datos.correo or '' }}" required>
+
+    <button>Comprar</button>
+  </form>
+  <p><a href="/">← Volver a las entradas</a></p>
+{% endblock %}

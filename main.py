@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from threading import Lock
 
@@ -200,6 +201,57 @@ def pagina_entrada(request: Request, entrada_id: str):
     return templates.TemplateResponse(request, "entrada.html", {"entrada": entrada})
 
 
+# ---------- COMPRAR (POST-redirect-GET) ----------
+
+def formulario_compra(request, datos, error=None, codigo=200):
+    return templates.TemplateResponse(
+        request, "comprar.html",
+        {"entradas": ENTRADAS, "datos": datos, "error": error},
+        status_code=codigo,
+    )
+
+
+@app.get("/comprar", response_class=HTMLResponse)
+def pagina_comprar(request: Request, tipo: str = ""):
+    return formulario_compra(request, {"tipo_id": tipo, "cantidad": 1, "nombre": "", "correo": ""})
+
+
+@app.post("/comprar", response_class=HTMLResponse)
+def comprar(request: Request, tipo_id: str = Form(""), cantidad: str = Form(""),
+            nombre: str = Form(""), correo: str = Form("")):
+    datos = {"tipo_id": tipo_id.strip(), "cantidad": cantidad.strip(),
+             "nombre": nombre.strip(), "correo": correo.strip()}
+
+    # Mismas reglas que CompraNueva, pero el error se pinta en la página
+    error = None
+    tipo, num = a_entero(datos["tipo_id"]), a_entero(datos["cantidad"])
+    if tipo is None:
+        error = "Elige un tipo de entrada."
+    elif num is None or num < 1:
+        error = "La cantidad tiene que ser un número entero de 1 en adelante."
+    elif not 2 <= len(datos["nombre"]) <= 60:
+        error = "Escribe tu nombre (entre 2 y 60 caracteres)."
+    elif len(datos["correo"]) > 120 or not re.fullmatch(PATRON_CORREO, datos["correo"]):
+        error = "Ese correo no es válido. Ejemplo: nombre@dominio.com"
+
+    if error is None:
+        compra, fallo = registrar_compra(tipo, num, datos["nombre"], datos["correo"])
+        if fallo is None:
+            return RedirectResponse(f"/compra/{compra['id']}", status_code=303)
+        error = fallo[1]
+
+    return formulario_compra(request, datos, error, codigo=400)
+
+
+@app.get("/compra/{compra_id}", response_class=HTMLResponse)
+def confirmacion(request: Request, compra_id: str):
+    compra = buscar_compra(a_entero(compra_id))
+    if compra is None:
+        return pagina_error(request, "Esa compra no existe", "No hay ninguna compra con ese número.")
+    entrada = buscar_entrada(compra["tipo_id"])
+    return templates.TemplateResponse(request, "confirmacion.html", {"compra": compra, "entrada": entrada})
+
+
 # ---------- PRUEBA (en tu ordenador: python main.py) ----------
 if __name__ == "__main__":
     from aula import Cliente
@@ -215,3 +267,19 @@ if __name__ == "__main__":
     print(c.get(f"/api/compras/{r.json()['id']}").status_code, "(esperado 200)")
     print(c.get("/").status_code, c.get("/entradas/1").status_code, "(esperado 200 200)")
     print(c.get("/entradas/99").status_code, c.get("/entradas/abc").status_code, "(esperado 404 404)")
+
+    # Formulario (el Cliente sigue la redirección 303 hasta la confirmación)
+    r = c.post("/comprar", data={"tipo_id": "1", "cantidad": "3", "nombre": "Iker", "correo": "iker@ejemplo.com"})
+    print(r.status_code, r.url, "75 €" in r.text, "(esperado 200 .../compra/2 True)")
+    antes = len(COMPRAS)
+    c.get(str(r.url))
+    print("recargar no repite la compra:", len(COMPRAS) == antes)
+    r = c.post("/comprar", data={"tipo_id": "1", "cantidad": "3", "nombre": "Iker", "correo": "mal"})
+    print(r.status_code, "Iker" in r.text, "(esperado 400 True: error en la página sin perder lo escrito)")
+    r = c.post("/comprar", data={"tipo_id": "4", "cantidad": "2", "nombre": "Mikel", "correo": "m@e.com"})
+    while r.status_code == 200:  # comprar VIP hasta agotarla
+        r = c.post("/comprar", data={"tipo_id": "4", "cantidad": "2", "nombre": "Mikel", "correo": "m@e.com"})
+    print(r.status_code, buscar_entrada(4)["plazas_libres"], "Agotada" in c.get("/").text,
+          "(esperado 400 0 True)")
+    print(c.post("/api/compras", json={"tipo_id": 4, "cantidad": 1, "nombre": "Ane", "correo": "a@e.com"})
+          .status_code, "(esperado 409)")

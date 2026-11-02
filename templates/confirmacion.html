@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block titulo %}Compra {{ compra.id }}{% endblock %}
+
+{% block contenido %}
+  <h1>¡Compra hecha!</h1>
+  <div class="caja">
+    <p class="ok">Te enviaremos las entradas a {{ compra.correo }}.</p>
+    <dl>
+      <dt>N.º de compra</dt><dd>{{ compra.id }}</dd>
+      <dt>Entrada</dt><dd>{{ entrada.nombre }} ({{ entrada.dias }}, {{ entrada.zona }})</dd>
+      <dt>Cantidad</dt><dd>{{ compra.cantidad }} × {{ entrada.precio }} €</dd>
+      <dt>Total</dt><dd><b>{{ compra.total }} €</b></dd>
+      <dt>A nombre de</dt><dd>{{ compra.nombre }}</dd>
+      <dt>Fecha</dt><dd>{{ compra.fecha.replace("T", " ") }}</dd>
+    </dl>
+  </div>
+  <p><a href="/">← Volver a las entradas</a></p>
+{% endblock %}

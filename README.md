@@ -52,3 +52,19 @@ Abre <http://127.0.0.1:8000/> y, para probar la API, <http://127.0.0.1:8000/docs
 - **Total**: lo calcula siempre el servidor (`precio × cantidad`). Nunca se fía de un precio o total que llegue del
   formulario o de la API; si llega, se ignora.
 - **Tipo**: tiene que existir; si no, la compra se rechaza.
+
+## Rutas
+
+| Ruta | Qué hace |
+|------|----------|
+| `GET /` | Portada: una tarjeta por tipo con precio y plazas libres («Agotada» si no quedan). |
+| `GET /entradas/{id}` | Página del tipo con la descripción completa y el botón de comprar. |
+| `GET /comprar?tipo={id}` | Formulario de compra. |
+| `POST /comprar` | Guarda la compra y redirige con 303 a la confirmación; si algo falla, 400 con el error en la página. |
+| `GET /compra/{id}` | Confirmación con el resumen y el total (recargarla no repite la compra). |
+| `GET /api/entradas` | Lista de tipos en JSON (200). |
+| `GET /api/entradas/{id}` | Un tipo (200 · 404). |
+| `POST /api/compras` | Crea una compra (201 · 422 datos mal · 409 sin plazas). |
+| `GET /api/compras/{id}` | Una compra (200 · 404). |
+
+Para una prueba rápida sin navegador: `python main.py`.
