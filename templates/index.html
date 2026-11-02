@@ -3,18 +3,33 @@
 {% block titulo %}Entradas{% endblock %}
 
 {% block contenido %}
-  <h1>Entradas</h1>
+  <section class="hero">
+    <span class="antetitulo">Festival de música</span>
+    <h1>SOINU</h1>
+    <p>Tres días de música en directo. Elige tu entrada y nos vemos delante del escenario.</p>
+    <div class="onda" aria-hidden="true">
+      {% for i in range(24) %}<span style="animation-delay: -{{ (i * 37) % 100 / 100 }}s"></span>{% endfor %}
+    </div>
+  </section>
 
+  <h2 class="seccion" id="entradas">Entradas</h2>
   <ul class="tarjetas">
     {% for e in entradas %}
       <li class="tarjeta{% if e.plazas_libres == 0 %} agotada{% endif %}">
         <h2>{{ e.nombre }}</h2>
         <p>{{ e.descripcion_corta }}</p>
-        <div class="precio">{{ e.precio }} €</div>
+        <div class="precio">{{ e.precio }} <small>€</small></div>
         {% if e.plazas_libres == 0 %}
           <div><span class="etiqueta-agotada">Agotada</span></div>
         {% else %}
-          <div class="plazas">Quedan {{ e.plazas_libres }} de {{ e.plazas_totales }}</div>
+          <div class="plazas">
+            {% if e.plazas_libres <= e.plazas_totales * 0.1 %}
+              <span class="pocas">¡Últimas {{ e.plazas_libres }}!</span>
+            {% else %}
+              Quedan {{ e.plazas_libres }} de {{ e.plazas_totales }}
+            {% endif %}
+            <div class="medidor"><span style="width: {{ (e.plazas_libres / e.plazas_totales * 100)|round }}%"></span></div>
+          </div>
           <a class="boton" href="/entradas/{{ e.id }}">Ver y comprar</a>
         {% endif %}
       </li>

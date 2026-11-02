@@ -3,17 +3,26 @@
 {% block titulo %}Compra {{ compra.id }}{% endblock %}
 
 {% block contenido %}
-  <h1>¡Compra hecha!</h1>
-  <div class="caja">
-    <p class="ok">Te enviaremos las entradas a {{ compra.correo }}.</p>
-    <dl>
-      <dt>N.º de compra</dt><dd>{{ compra.id }}</dd>
-      <dt>Entrada</dt><dd>{{ entrada.nombre }} ({{ entrada.dias }}, {{ entrada.zona }})</dd>
-      <dt>Cantidad</dt><dd>{{ compra.cantidad }} × {{ entrada.precio }} €</dd>
-      <dt>Total</dt><dd><b>{{ compra.total }} €</b></dd>
-      <dt>A nombre de</dt><dd>{{ compra.nombre }}</dd>
-      <dt>Fecha</dt><dd>{{ compra.fecha.replace("T", " ") }}</dd>
-    </dl>
+  <h1 class="titulo-pagina">¡Nos vemos en SOINU!</h1>
+  <p class="ok">Compra hecha. Te enviaremos las entradas a {{ compra.correo }}.</p>
+
+  <div class="ticket">
+    <div class="cuerpo">
+      <h2>{{ entrada.nombre }}</h2>
+      <dl>
+        <dt>A nombre de</dt><dd>{{ compra.nombre }}</dd>
+        <dt>Días</dt><dd>{{ entrada.dias }}</dd>
+        <dt>Zona</dt><dd>{{ entrada.zona }}</dd>
+        <dt>Cantidad</dt><dd>{{ compra.cantidad }} × {{ entrada.precio }} €</dd>
+        <dt>Fecha de compra</dt><dd>{{ compra.fecha.replace("T", " ") }}</dd>
+      </dl>
+      <div class="precio">{{ compra.total }} <small>€ en total</small></div>
+    </div>
+    <div class="talon">
+      <small>N.º de compra</small>
+      <b>{{ compra.id }}</b>
+      <small>{{ compra.cantidad }} entrada{% if compra.cantidad > 1 %}s{% endif %}</small>
+    </div>
   </div>
-  <p><a href="/">← Volver a las entradas</a></p>
+  <a class="volver" href="/">← Volver a las entradas</a>
 {% endblock %}
